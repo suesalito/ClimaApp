@@ -4,28 +4,12 @@ import 'package:clima/services/location.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:clima/services/networking.dart';
+import 'location_screen.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override
   _LoadingScreenState createState() => _LoadingScreenState();
-}
-
-Location location = Location();
-
-Future getCurrentLocationData() async {
-  await location.getLocation(); // wait until the postion has been returned.
-
-  String apiKey = 'c903578cf82d51468f45557051daa474';
-  double lat = location.getPosition()['Lat'];
-  double long = location.getPosition()['Long'];
-
-  NetworkHelper networkHelper =
-      NetworkHelper('https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$long&appid=$apiKey');
-  //getLocationWeather();
-  //print(location);
-  var weatherData = await networkHelper.getData();
-  var cityName = weatherData['name'];
-  print(cityName);
 }
 
 // void getLocationWeather() async {
@@ -58,12 +42,44 @@ Future getCurrentLocationData() async {
 // }
 
 class _LoadingScreenState extends State<LoadingScreen> {
+  Location location = Location();
+
+  void getCurrentLocationData() async {
+    await location.getLocation(); // wait until the postion has been returned.
+
+    String apiKey = 'c903578cf82d51468f45557051daa474';
+    double lat = location.getPosition()['Lat'];
+    double long = location.getPosition()['Long'];
+
+    NetworkHelper networkHelper =
+        NetworkHelper('https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$long&appid=$apiKey');
+    //getLocationWeather();
+    //print(location);
+    var weatherData = await networkHelper.getData();
+    var cityName = weatherData['name'];
+    print(cityName);
+
+    // Navigator.push(context, MaterialPageRoute(builder: (context) {
+    //   return LocationScreen();
+    // }));
+
+    // ** use the PushAndRemoveUntil method instead,
+    // since you will not allow use to go back to the previous loading screen.
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LocationScreen()),
+      (Route<dynamic> route) => false,
+    );
+  }
+
   @override
   void initState() {
     // TODO: implement initState
-    //print('x');
-    getCurrentLocationData();
+    print('x');
+
     super.initState();
+    getCurrentLocationData();
   }
 
   @override
@@ -72,15 +88,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
     //getLocationWeather();
     return Scaffold(
       body: Center(
-        child: RaisedButton(
-          onPressed: () {
-            //Get the current location
-            //Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-            //getLocation();
-          },
-          child: Text(location.getPosition()['Long'].toString()),
-        ),
-      ),
+          child: SpinKitDoubleBounce(
+        color: Colors.white,
+        size: 120,
+      )),
     );
   }
 }
