@@ -1,6 +1,9 @@
 import 'package:geolocator/geolocator.dart';
 
 class Location {
+  // comment since it is not private.
+  // double = latitude;
+  // double = longtitude;
   double _latitude;
   double _longtitude;
 
@@ -14,8 +17,8 @@ class Location {
       Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
       _latitude = position.latitude;
       _longtitude = position.longitude;
-      print(position);
-      print('test');
+      //print(position);
+      //print('test');
     } catch (e) {
       print(e);
     }
@@ -23,7 +26,7 @@ class Location {
     //print(position);
   }
 
-  List<double> getPosition() {
-    return [_latitude, _longtitude];
+  Map<String, double> getPosition() {
+    return {'Lat': _latitude, 'Long': _longtitude};
   }
 }

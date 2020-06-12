@@ -1,45 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:clima/services/location.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:clima/services/networking.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override
   _LoadingScreenState createState() => _LoadingScreenState();
 }
 
-void getCurrentLocation() async {
-  Location location = Location();
+Location location = Location();
+
+Future getCurrentLocationData() async {
   await location.getLocation(); // wait until the postion has been returned.
 
-  //comment since non-private property can be directly changed. and make the variable in class location as private
-  // then crate the get method
-  // print(location.latitude);
-  // print(location.longtitude);
-  // location.latitude = 1;
-  // print(location.latitude);
-  // print(location.longtitude);
+  String apiKey = 'c903578cf82d51468f45557051daa474';
+  double lat = location.getPosition()['Lat'];
+  double long = location.getPosition()['Long'];
 
-  print(location.getPosition());
-
+  NetworkHelper networkHelper =
+      NetworkHelper('https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$long&appid=$apiKey');
+  //getLocationWeather();
   //print(location);
+  var weatherData = await networkHelper.getData();
+  var cityName = weatherData['name'];
+  print(cityName);
 }
+
+// void getLocationWeather() async {
+//   String apiKey = 'c903578cf82d51468f45557051daa474';
+//   double lat = location.getPosition()['Lat'];
+//   double long = location.getPosition()['Long'];
+
+//   print('$lat --- $long');
+//   print('https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$long&appid=$apiKey');
+//   http.Response response =
+//       await http.get('https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$long&appid=$apiKey');
+
+//   if (response.statusCode == 200) {
+//     print(response.body);
+//     String data = response.body;
+//     var decodeData = jsonDecode(data);
+
+//     // var dataMain = decodeData['weather'][0]['main'];
+//     // var dataCondition = decodeData['weather'][0]['id'];
+//     // var dataTemp = decodeData['main']['temp'];
+//     // var dataCityName = decodeData['name'];
+//     // print(dataMain);
+//     // print(dataCityName);
+//     // print(dataTemp);
+//     // print(dataCondition);
+//   } else {
+//     print(response.statusCode);
+//     print('Cannot get the weather');
+//   }
+// }
 
 class _LoadingScreenState extends State<LoadingScreen> {
   @override
   void initState() {
+    // TODO: implement initState
+    //print('x');
+    getCurrentLocationData();
     super.initState();
-
-    getCurrentLocation();
-  }
-
-  @override
-  void deactivate() {
-    // TODO: implement deactivate
-    super.deactivate();
   }
 
   @override
   Widget build(BuildContext context) {
+    //print('=====================');
+    //getLocationWeather();
     return Scaffold(
       body: Center(
         child: RaisedButton(
@@ -48,7 +78,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
             //Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
             //getLocation();
           },
-          child: Text('Get Location'),
+          child: Text(location.getPosition()['Long'].toString()),
         ),
       ),
     );
