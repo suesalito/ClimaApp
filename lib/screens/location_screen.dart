@@ -1,15 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:clima/utilities/constants.dart';
+import 'package:clima/services/weather.dart';
 
 class LocationScreen extends StatefulWidget {
+  final locationWeather;
+
+  LocationScreen({this.locationWeather});
+
   @override
   _LocationScreenState createState() => _LocationScreenState();
 }
 
 class _LocationScreenState extends State<LocationScreen> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    updateUI(widget.locationWeather);
+  }
+
+  WeatherModel weatherModel = WeatherModel();
+  double temparature;
+  String condition;
+  String city;
+  String weatherMain;
+  String message;
+
+  updateUI(dynamic weatherData) {
+    weatherMain = weatherData['weather'][0]['main'];
+    condition = weatherModel.getWeatherIcon(weatherData['weather'][0]['id']);
+    message = weatherModel.getMessage(weatherData['main']['temp'].toInt());
+    temparature = weatherData['main']['temp'];
+    city = weatherData['name'];
+
+    print(condition);
+    print(message);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar: AppBar(), No need appbar since we will create interface ourselve,
+      // and avoid user go back to loading screen.
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -48,11 +80,13 @@ class _LocationScreenState extends State<LocationScreen> {
                 child: Row(
                   children: <Widget>[
                     Text(
-                      '32°',
+                      //'32°',
+                      '${temparature.toInt().toString()} °', // make it integer then String to display.
                       style: kTempTextStyle,
                     ),
                     Text(
-                      '☀️',
+                      //'☀️',
+                      '$condition',
                       style: kConditionTextStyle,
                     ),
                   ],
@@ -61,7 +95,8 @@ class _LocationScreenState extends State<LocationScreen> {
               Padding(
                 padding: EdgeInsets.only(right: 15.0),
                 child: Text(
-                  "It's 🍦 time in San Francisco!",
+                  //"It's 🍦 time in San Francisco!", // if you have ' in the text, you will use "" instead.
+                  "$message in $city",
                   textAlign: TextAlign.right,
                   style: kMessageTextStyle,
                 ),
