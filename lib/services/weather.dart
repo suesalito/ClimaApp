@@ -3,7 +3,7 @@ import 'package:clima/services/location.dart';
 import 'package:clima/services/networking.dart';
 
 class WeatherModel {
-  getWeatherdata() async {
+  Future<dynamic> getWeatherdata() async {
     Location location = Location();
     await location.getLocation(); // wait until the postion has been returned.
 
