@@ -3,11 +3,23 @@ import 'package:clima/services/location.dart';
 import 'package:clima/services/networking.dart';
 
 class WeatherModel {
+  String apiKey = 'c903578cf82d51468f45557051daa474';
+
+  Future<dynamic> getCityWeather(String cityName) async {
+    String apiCityUrl = 'https://api.openweathermap.org/data/2.5/weather?q=$cityName&appid=$apiKey';
+    NetworkHelper networkHelper =
+        // make it shorter by sending object thu ${nameofthefield}
+        //NetworkHelper('https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$long&appid=$apiKey&units=metric');
+        NetworkHelper('$apiCityUrl&units=metric');
+    //getLocationWeather();
+    print('$apiCityUrl&units=metric');
+    return await networkHelper.getData();
+  }
+
   Future<dynamic> getWeatherdata() async {
     Location location = Location();
     await location.getLocation(); // wait until the postion has been returned.
 
-    String apiKey = 'c903578cf82d51468f45557051daa474';
     String apiUrl = 'https://api.openweathermap.org/data/2.5/weather?lat=';
     double lat = location.getPosition()['Lat'];
     double long = location.getPosition()['Long'];
